@@ -1,7 +1,6 @@
 py37env/
 *.pyc
-*.xlsx
-*.csv
+~$*.xlsx
 *.xml
 *.xml.gz
 .vscode
