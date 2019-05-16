@@ -120,12 +120,12 @@ def generate_sitemap(df, frequency, priority, lastmodified, maxurls, classifier_
 		count_higher_limit += PER_FILE_LIMIT
 
 def main():
+	"""This function reads the excel file and generates a sitemap according to the command line arguments provided"""
 	try:
 		df = pd.read_excel(args.file, 'Sheet1', index_col=None)
 	except Exception as e:
 		print("%s. File error" % e)
 		exit()
-	print("Hi there")
 
 	if args.classifier:
 		unique_clasifiers_list = np.array(list(set(df[CLASSIFIER_COL].tolist())))
