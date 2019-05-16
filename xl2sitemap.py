@@ -97,18 +97,20 @@ def generate_sitemap(df, frequency, priority, lastmodified, maxurls, classifier_
 					url.append(changefreq_attribute)
 
 				root.append(url)
-			except Exception:
+			except Exception as e:
+				print(str(e))
 				continue
+
 		if classifier_value:
-			file_name = "sitemap-%s-%s.xml" % (clean(classifier_value), file_number)
+			file_name = "sitemap-%s-%s.xml" % (clean_string(classifier_value), file_number)
 		else:
 			file_name = "sitemap-%s.xml" % file_number
 
-		file = open(file_name, 'w')
-		file.write(etree.tostring(root, pretty_print=True, xml_declaration = True, encoding='UTF-8'))
+		file = open(file_name, 'wb')
+		file.write(etree.tostring(root, pretty_print=True, xml_declaration=True, encoding='utf-8'))
 		file.close()
 		
-		file = open(file_name, 'r')
+		file = open(file_name, 'rb')
 		gfile = gzip.open("%s.gz" % file_name, "wb")
 		gfile.writelines(file)
 		gfile.close()
@@ -123,12 +125,14 @@ def main():
 	except Exception as e:
 		print("%s. File error" % e)
 		exit()
-
-	unique_clasifiers_list = np.array(list(set(df[CLASSIFIER_COL].tolist())))
+	print("Hi there")
 
 	if args.classifier:
+		unique_clasifiers_list = np.array(list(set(df[CLASSIFIER_COL].tolist())))
 		for classifier_item in tqdm(unique_clasifiers_list, total=len(unique_clasifiers_list)):
 			classifier_df = df.loc[(df[CLASSIFIER_COL]==classifier_item)]
 			generate_sitemap(classifier_df, args.frequency, args.priority, args.lastmodified, PER_FILE_LIMIT, classifier_item)
 	else:
 		generate_sitemap(df, args.frequency, args.priority, args.lastmodified, PER_FILE_LIMIT)
+
+main()
