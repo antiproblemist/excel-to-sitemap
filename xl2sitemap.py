@@ -131,8 +131,8 @@ def main():
 		unique_clasifiers_list = np.array(list(set(df[CLASSIFIER_COL].tolist())))
 		for classifier_item in tqdm(unique_clasifiers_list, total=len(unique_clasifiers_list)):
 			classifier_df = df.loc[(df[CLASSIFIER_COL]==classifier_item)]
-			generate_sitemap(classifier_df, args.changefreq, args.priority, args.lastmodified, PER_FILE_LIMIT, classifier_item)
+			generate_sitemap(classifier_df, args.changefreq, args.priority, args.lastmod, PER_FILE_LIMIT, classifier_item)
 	else:
-		generate_sitemap(df, args.frequency, args.priority, args.lastmodified, PER_FILE_LIMIT)
+		generate_sitemap(df, args.changefreq, args.priority, args.lastmod, PER_FILE_LIMIT)
 
 main()
