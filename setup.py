@@ -14,6 +14,7 @@ setup(
     author = "Shahzeb Qureshi",
     author_email = "shahzeb_iam@outlook.com",
     url = "https://github.com/antiproblemist/xl2sitemap",
+    include_package_data = True,
     package_data={
         '': ['LICENSE'],
     },
