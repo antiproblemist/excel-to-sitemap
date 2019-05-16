@@ -10,16 +10,16 @@ parser.add_argument("file", help="The path/file name of the Excel file that cont
 to be converted to a sitemap. The excel file should atleast have a column name 'url' with\
 the URLs for which sitemap is to be generated.", action="store")
 
-parser.add_argument("-f", "--frequency", help="an option to specify whether a frequency column \
-with the column name 'frequency' has been provided in the excel sheet. If provided, all \
+parser.add_argument("-f", "--changefreq", help="an option to specify whether a changefreq column \
+with the column name 'changefreq' has been provided in the excel sheet. If provided, all \
 generated sitemaps will have a <changefreq> atrribute.", default=False, action="store_true")
 
 parser.add_argument("-p", "--priority", help="an option to specify whether a priority column \
 with the column name 'priority' has been provided in the excel sheet. If provided, all \
 generated sitemaps will have a <priority> atrribute", default=False, action="store_true")
 
-parser.add_argument("-l", "--lastmodified", help="an option to specify whether a last modified \
-column with the column name 'lastmodified' has been provided in the excel sheet. If provided, all \
+parser.add_argument("-l", "--lastmod", help="an option to specify whether a last modified date \
+column with the column name 'lastmod' has been provided in the excel sheet. If provided, all \
 generated sitemaps will have a <lastmod> atrribute", default=False, action="store_true")
 
 parser.add_argument("-m", "--maxurls", type=int, default=35000, help="an integer to specify the maximum number of URLs that \
@@ -34,8 +34,8 @@ args = parser.parse_args()
 
 URL_COLUMN = "url"
 PRIORITY_COLUMN = "priority"
-CHANGEFREQ_COL = "frequency"
-LASTMODIFIED_COL = "lastmodified"
+CHANGEFREQ_COL = "changefreq"
+LASTMODIFIED_COL = "lastmod"
 CLASSIFIER_COL = "classifier"
 PER_FILE_LIMIT = args.maxurls
 
@@ -131,7 +131,7 @@ def main():
 		unique_clasifiers_list = np.array(list(set(df[CLASSIFIER_COL].tolist())))
 		for classifier_item in tqdm(unique_clasifiers_list, total=len(unique_clasifiers_list)):
 			classifier_df = df.loc[(df[CLASSIFIER_COL]==classifier_item)]
-			generate_sitemap(classifier_df, args.frequency, args.priority, args.lastmodified, PER_FILE_LIMIT, classifier_item)
+			generate_sitemap(classifier_df, args.changefreq, args.priority, args.lastmodified, PER_FILE_LIMIT, classifier_item)
 	else:
 		generate_sitemap(df, args.frequency, args.priority, args.lastmodified, PER_FILE_LIMIT)
 
