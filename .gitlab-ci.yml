@@ -4,7 +4,7 @@ stages:
   - deploy
 
 before_script:
-   - pip install -r requirements.txt
+   - pip install twine
    - python setup.py bdist bdist_wheel
 
 deploy_production:
