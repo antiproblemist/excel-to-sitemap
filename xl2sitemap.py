@@ -32,65 +32,78 @@ default=False, action="store_true")
 
 args = parser.parse_args()
 
-input_workbook_path = args.file
+URL_COLUMN = "url"
+PRIORITY_COLUMN = "priority"
+CHANGEFREQ_COL = "frequency"
+LASTMODIFIED_COL = "lastmodified"
+CLASSIFIER_COL = "classifier"
+PER_FILE_LIMIT = args.maxurls
 
-url_col = "url"
-priority_col = "priority"
-changefreq_col = "frequency"
-lastmodified_col = "lastmodified"
-classifier_col = "classifier"
+def clean_string(text):
+	"""This function runs a regex function to strip all special characters and make it appropriate for a file name
+	Parameters:
+	text (str): The string that needs to be converted to an appropriate file name
 
-try:
-	df = pd.read_excel(args.file, 'Sheet1', index_col=None)
-except Exception as e:
-	print("%s. File error" % e)
-	
-def clean(text):
+	Returns:
+	str: Return the clean value appropriate for a file name
+	"""
 	text = re.sub('[^a-z0-9-]+', '', text.lower().strip().replace(" ", "-"))
 	return text
 
-unique_clasifiers_list = np.array(list(set(df[classifier_col].tolist())))
 
-per_file_limit = 35000
+def generate_sitemap(df, frequency, priority, lastmodified, maxurls, classifier_value=None):
+	"""This function iterates over the DataFrame, reading the 'url' column in it. \
+	If the total length of the number of urls exceeds the default or specified value of \
+	maxurls then the file is split into multiple files.
 
-file_df = pd.DataFrame(columns=['file_name', 'gzip_file_name', 'type'])
-file_list = []
-for classifier_item in tqdm(unique_clasifiers_list, total=len(unique_clasifiers_list)):
+	Parameters:
+		df (DataFrame): The pandas DataFrame containing the urls and other optional columns
+		frequency (bool): A boolean value indicating whether to include the <changefreq> attributes in the sitemap or not
+		priority (bool): A boolean value indicating whether to include the <priority> attributes in the sitemap or not	
+		lastmodified (bool): A boolean value indicating whether to include the <lastmod> attributes in the sitemap or not
+		maxurls (int): An int value specifying the maximum number of urls inside a single sitemap file
+		classifier_value (str, optional): The name of the classifer for which the sitemap is to be generated. This will be included int he sitemap file name.
+	"""
 
 	count_lower_limit = 0
-	count_higher_limit = per_file_limit
+	count_higher_limit = PER_FILE_LIMIT
 
-	city_df = df.loc[(df[classifier_col]==classifier_item)]
-	file_count = int(ceil(float(len(city_df.index)) / float(per_file_limit)))
+	file_count = int(ceil(float(len(df.index)) / float(PER_FILE_LIMIT)))
 
 	for file_number in range(1, file_count + 1):
 		root = etree.Element('urlset', xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
-		for index, row in tqdm(city_df[count_lower_limit:count_higher_limit].iterrows(), total=len(city_df[count_lower_limit:count_higher_limit].index)):
+		for index, row in tqdm(df[count_lower_limit:count_higher_limit].iterrows(), total=len(df[count_lower_limit:count_higher_limit].index)):
 			try:
 				url = etree.Element("url")
 
 				loc = etree.Element("loc")
-				loc.text = str(row[link_col])
+				loc.text = str(row[URL_COLUMN])
 				url.append(loc)
 
-				lastmod = etree.Element("lastmod")
-				lastmod_datetime = datetime.strftime(row[lastmodified_col], '%Y-%m-%d')
-				lastmod.text = str(lastmod_datetime)
-				url.append(lastmod)
+				if lastmodified:
+					lastmod_attribute = etree.Element("lastmod")
+					lastmod_datetime = datetime.strftime(row[LASTMODIFIED_COL], '%Y-%m-%d')
+					lastmod_attribute.text = str(lastmod_datetime)
+					url.append(lastmod_attribute)
 
-				priority = etree.Element("priority")
-				priority.text = str(row[priority_col])
-				url.append(priority)
+				if priority:
+					priority_attribute = etree.Element("priority")
+					priority_attribute.text = str(row[PRIORITY_COLUMN])
+					url.append(priority_attribute)
 
-				changefreq = etree.Element("changefreq")
-				changefreq.text = str(row[changefreq_col])
-				url.append(changefreq)
+				if frequency:
+					changefreq_attribute = etree.Element("changefreq")
+					changefreq_attribute.text = str(row[CHANGEFREQ_COL])
+					url.append(changefreq_attribute)
 
 				root.append(url)
 			except Exception:
 				continue
+		if classifier_value:
+			file_name = "sitemap-%s-%s.xml" % (clean(classifier_value), file_number)
+		else:
+			file_name = "sitemap-%s.xml" % file_number
 
-		file_name = "sitemap-%s-listing-%s.xml" % (clean(city_item), file_number)
 		file = open(file_name, 'w')
 		file.write(etree.tostring(root, pretty_print=True, xml_declaration = True, encoding='UTF-8'))
 		file.close()
@@ -100,17 +113,22 @@ for classifier_item in tqdm(unique_clasifiers_list, total=len(unique_clasifiers_
 		gfile.writelines(file)
 		gfile.close()
 		file.close()
-		
-		file_dict = {
-			'file_name': file_name,
-			'gzip_file_name': "%s.gz" % file_name,
-			'type': 'listing'
-		}
-		file_list.append(file_dict)
 
-		count_lower_limit += per_file_limit
-		count_higher_limit += per_file_limit
-		
-temp_df = pd.DataFrame.from_dict(file_list)
-file_df = file_df.append(temp_df, ignore_index=True)
-file_df.to_excel("List-of-sitemaps-generated.xlsx", sheet_name='Sheet1', index=None)
+		count_lower_limit += PER_FILE_LIMIT
+		count_higher_limit += PER_FILE_LIMIT
+
+def main():
+	try:
+		df = pd.read_excel(args.file, 'Sheet1', index_col=None)
+	except Exception as e:
+		print("%s. File error" % e)
+		exit()
+
+	unique_clasifiers_list = np.array(list(set(df[CLASSIFIER_COL].tolist())))
+
+	if args.classifier:
+		for classifier_item in tqdm(unique_clasifiers_list, total=len(unique_clasifiers_list)):
+			classifier_df = df.loc[(df[CLASSIFIER_COL]==classifier_item)]
+			generate_sitemap(classifier_df, args.frequency, args.priority, args.lastmodified, PER_FILE_LIMIT, classifier_item)
+	else:
+		generate_sitemap(df, args.frequency, args.priority, args.lastmodified, PER_FILE_LIMIT)
