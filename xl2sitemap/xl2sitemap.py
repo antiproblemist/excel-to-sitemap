@@ -134,5 +134,3 @@ def main():
 			generate_sitemap(classifier_df, args.changefreq, args.priority, args.lastmod, PER_FILE_LIMIT, classifier_item)
 	else:
 		generate_sitemap(df, args.changefreq, args.priority, args.lastmod, PER_FILE_LIMIT)
-
-main()
