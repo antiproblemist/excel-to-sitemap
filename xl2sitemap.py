@@ -23,8 +23,7 @@ column with the column name 'lastmodified' has been provided in the excel sheet.
 generated sitemaps will have a <lastmod> atrribute", default=False, action="store_true")
 
 parser.add_argument("-m", "--maxurls", type=int, default=35000, help="an integer to specify the maximum number of URLs that \
-should be contained in a single sitemap file and the sitemap will be split into multiple files.",\
-action="store_const")
+should be contained in a single sitemap file and the sitemap will be split into multiple files.")
 
 parser.add_argument("-c", "--classifier", help="an option to specify whether a classifier column \
 with the column name 'classifier' has been provided in the excel sheet. If provided the sitemaps \
