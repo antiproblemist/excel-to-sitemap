@@ -17,6 +17,7 @@ setup(
     version = version,
     description = "Generate heavy sitemap files using excel sheets",
     long_description = long_description,
+    long_description_content_type='text/markdown',
     author = "Shahzeb Qureshi",
     author_email = "shahzeb_iam@outlook.com",
     url = "https://github.com/antiproblemist/excel-to-sitemap",
