@@ -24,7 +24,7 @@ Dillinger uses a number of open source projects to work properly:
 
 #### Structuring your excel sheet
 ![Excel sheet format](https://i.imgur.com/JocoeEb.png)
-* The column **_url_** is a compulsory column in your excel sheet. This contains the urls of your website
+* The column **_url_** is a **compulsory column** in your excel sheet. This contains the urls of your website
 * The **_classifier_** column is an optional column. This contains the classifier based on which the sitemap file will be split into multiple files. If you are including this column in your excel sheet, make sure you use the ```-c``` flag
 * The **_lastmod_** column is an optional column. This contains the last modified date of the corresponding url in DD/MM/YYYY format. If you are including this column in your excel sheet, make sure you use the ```-l``` flag
 * The **_changefreq_** column is an optional column. This contains the last change frequency of the corresponding url. If you are including this column in your excel sheet, make sure you use the ```-f``` flag
@@ -56,8 +56,13 @@ Other options that can be enabled are
 | ```-p``` | Will add ```<priority>``` tag in your sitemap |
 | ```-l``` | Will add ```<lastmod>``` tag in your sitemap |
 | ```-c``` | Will split sitemap into multiple files based on the classifier column |
-| ```-m 50000``` | Will add a maximum of 50000 urls only in a single sitemap. If urls are greater than 50000 then multiple files will be generated|
+| ```-m 50000``` | Will add a maximum of 500,00 urls only in a single sitemap. If urls are greater than 500,00 then multiple files will be generated|
 
+Example
+```
+xl2sitemap exmaple-input.xlsx -m 40000 -p -f -l
+```
+This will generate sitemaps with 400,00 urls in each file with ```<changefreq>```, ```<priority>```, ```<lastmod>``` attributes for each ```<urlset>```.
 
 ### Development
 
