@@ -56,13 +56,13 @@ Other options that can be enabled are
 | ```-p``` | Will add ```<priority>``` tag in your sitemap |
 | ```-l``` | Will add ```<lastmod>``` tag in your sitemap |
 | ```-c``` | Will split sitemap into multiple files based on the classifier column |
-| ```-m 50000``` | Will add a maximum of 500,00 urls only in a single sitemap. If urls are greater than 500,00 then multiple files will be generated|
+| ```-m 50000``` | Will add a maximum of 50,000 urls only in a single sitemap. If urls are greater than 50,000 then multiple files will be generated|
 
 Example
 ```
-xl2sitemap exmaple-input.xlsx -m 40000 -p -f -l
+xl2sitemap example-input.xlsx -m 40000 -p -f -l
 ```
-This will generate sitemaps with 400,00 urls in each file with ```<changefreq>```, ```<priority>```, ```<lastmod>``` attributes for each ```<urlset>```.
+This will generate sitemaps with 40,000 urls in each file with ```<changefreq>```, ```<priority>```, ```<lastmod>``` attributes for each ```<urlset>```.
 
 ### Development
 
