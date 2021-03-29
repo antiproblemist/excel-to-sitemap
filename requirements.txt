@@ -12,7 +12,7 @@ mccabe==0.6.1
 numpy==1.16.3
 pandas==0.24.2
 pkginfo==1.5.0.1
-Pygments==2.4.0
+Pygments==2.7.4
 pylint==2.3.1
 python-dateutil==2.8.0
 pytz==2019.1
